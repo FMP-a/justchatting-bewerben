@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        #logoutBtn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-container,
+        #applications-container {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+
+        #login-form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #login-form label,
+        #login-form input {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        #login-form button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-form button:hover {
+            background-color: #555;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Admin Dashboard</h1>
+    <button id="logoutBtn" onclick="logout()">Abmelden</button>
+</header>
+
+<div id="login-container">
+    <div id="login-form">
+        <label for="adminUsername">Benutzername:</label>
+        <input type="text" id="adminUsername" name="adminUsername" required>
+
+        <label for="adminPassword">Passwort:</label>
+        <input type="password" id="adminPassword" name="adminPassword" required>
+
+        <button onclick="adminLogin()">Einloggen</button>
+    </div>
+</div>
+
+<div id="applications-container" style="display: none;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const applicationsData = []; // Hier würden die Daten der Bewerbungen gespeichert
+
+    function logout() {
+        alert("Abmeldung erfolgreich");
+        // Hier sollte die Weiterleitung zur Logout-Seite oder andere Logout-Logik erfolgen
+    }
+
+    function toggleElementVisibility(elementId) {
+        const element = document.getElementById(elementId);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+
+    function showApplications() {
+        toggleElementVisibility('login-container');
+        toggleElementVisibility('applications-container');
+
+        // Hier würdest du die tatsächlichen Bewerbungsdaten abrufen und anstelle der leeren Daten setzen
+        displayApplications(applicationsData);
+    }
+
+    function displayApplications(applications) {
+        const applicationsContainer = document.getElementById('applications-container');
+        applicationsContainer.innerHTML = '';
+
+        applications.forEach(application => {
+            const applicationDiv = document.createElement('div');
+            applicationDiv.classList.add('application');
+            applicationDiv.addEventListener('click', () => toggleApplicationDetails(application));
+
+            const applicationName = document.createElement('p');
+            applicationName.classList.add('application-name');
+            applicationName.textContent = `${application.name} - ${application.role}`;
+
+            const applicationDetails = document.createElement('div');
+            applicationDetails.classList.add('application-details');
+
+            const applicationText = document.createElement('p');
+            applicationText.textContent = `Bewerbungstext: ${application.message}`;
+
+            const applicationDate = document.createElement('p');
+            const applicationTime = document.createElement('p');
+
+            const timestamp = new Date(application.timestamp);
+            applicationDate.textContent = `Datum: ${timestamp.toLocaleDateString()}`;
+            applicationTime.textContent = `Uhrzeit: ${timestamp.toLocaleTimeString()}`;
+
+            applicationDetails.appendChild(applicationText);
+            applicationDetails.appendChild(applicationDate);
+            applicationDetails.appendChild(applicationTime);
+
+            applicationDiv.appendChild(applicationName);
+            applicationDiv.appendChild(applicationDetails);
+
+            applicationsContainer.appendChild(applicationDiv);
+        });
+    }
+
+    function toggleApplicationDetails(application) {
+        const applicationDiv = event.currentTarget;
+        const applicationDetails = applicationDiv.querySelector('.application-details');
+        toggleElementVisibility(applicationDetails.id);
+    }
+
+    function adminLogin() {
+        const adminUsername = document.getElementById('adminUsername').value;
+        const adminPassword = document.getElementById('adminPassword').value;
+
+        // Hier sollte die tatsächliche Überprüfung der Anmeldedaten erfolgen
+        // Zum Beispiel könntest du dies mit einem Server-Backend überprüfen
+        // Dies ist nur ein Beispiel für Demo-Zwecke
+        if (adminUsername === 'admin' && adminPassword === 'admin') {
+            showApplications();
+            Swal.fire({
+                icon: 'success',
+                title: 'Anmeldung erfolgreich!',
+                text: 'Willkommen im Admin Dashboard!',
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Anmeldung fehlgeschlagen!',
+                text: 'Benutzername oder Passwort ist falsch.',
+            });
+        }
+    }
+</script>
+
+<footer>
+    <p>&copy; 2024 Just Chatting. Alle Rechte vorbehalten.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewerbungswebsite</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        #loginRegisterBtn,
+        #adminLoginBtn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        section {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        form {
+            display: grid;
+            gap: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Just Chatting</h1>
+    <button id="loginRegisterBtn" onclick="showLoginRegisterPopup()">Anmelden / Registrieren</button>
+    <button id="adminLoginBtn" onclick="redirectToAdmin()">Admin Login</button>
+</header>
+
+<section id="account" style="display: none;">
+    <h2>Konto bearbeiten</h2>
+    <form id="accountForm">
+        <label for="editUsername">Benutzername:</label>
+        <input type="text" id="editUsername" name="editUsername" required>
+
+        <label for="editPassword">Neues Passwort:</label>
+        <input type="password" id="editPassword" name="editPassword" required>
+
+        <button type="button" onclick="updateAccount()">Aktualisieren</button>
+    </form>
+</section>
+
+<section id="login" style="display: none;">
+    <h2>Anmeldung</h2>
+    <form id="loginForm">
+        <label for="loginUsername">Benutzername:</label>
+        <input type="text" id="loginUsername" name="loginUsername" required>
+
+        <label for="loginPassword">Passwort:</label>
+        <input type="password" id="loginPassword" name="loginPassword" required>
+
+        <button type="button" onclick="login()">Einloggen</button>
+    </form>
+</section>
+
+<section id="registration" style="display: none;">
+    <h2>Registrierung</h2>
+    <form id="registrationForm">
+        <label for="regUsername">Benutzername:</label>
+        <input type="text" id="regUsername" name="regUsername" required>
+
+        <label for="regPassword">Passwort:</label>
+        <input type="password" id="regPassword" name="regPassword" required>
+
+        <button type="button" onclick="register()">Registrieren</button>
+    </form>
+</section>
+
+<section id="form">
+    <h2>Bewerbungsformular</h2>
+    <form id="applicationForm">
+        <label for="job">Bewerbung für:</label>
+        <select id="job" name="job" required>
+            <option value="designer">Designer</option>
+            <option value="sponsor">Sponsor</option>
+            <option value="zeichner">Zeichner</option>
+            <option value="entwickler">Entwickler</option>
+            <option value="marketing">Marketing</option>
+        </select>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="phone">Telefonnummer:</label>
+        <input type="tel" id="phone" name="phone" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" placeholder="Format: 123-456-7890" required>
+
+        <label for="message">Bewerbungstext:</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+
+        <button type="button" onclick="submitApplication()">Bewerbung abschicken</button>
+    </form>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    let registeredUsers = [];
+
+    function showLoginRegisterPopup() {
+        Swal.fire({
+            title: 'Anmelden / Registrieren',
+            html: `
+                <label for="loginUsername">Benutzername:</label>
+                <input type="text" id="loginUsername" name="loginUsername" required>
+
+                <label for="loginPassword">Passwort:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+
+                <button type="button" onclick="login()">Einloggen</button>
+                <hr>
+                <label for="regUsername">Benutzername:</label>
+                <input type="text" id="regUsername" name="regUsername" required>
+
+                <label for="regPassword">Passwort:</label>
+                <input type="password" id="regPassword" name="regPassword" required>
+
+                <button type="button" onclick="register()">Registrieren</button>
+            `,
+            showCancelButton: true,
+            cancelButtonText: 'Abbrechen',
+            confirmButtonText: 'Fertig',
+            preConfirm: () => {
+                // Hier könntest du zusätzliche Logik für die Bestätigung durchführen
+                // Zum Beispiel Überprüfungen der Eingaben vor dem Schließen des Popups
+            }
+        });
+    }
+
+    function redirectToAdmin() {
+        // Hier könntest du weitere Überprüfungen für den Admin-Login durchführen
+        // Zum Beispiel Überprüfung von Benutzername und Passwort für Admins
+        // Falls erfolgreich, dann weiterleiten zur Admin-Seite
+        window.location.href = 'admin-dashboard.html';
+    }
+
+    function register() {
+        const regUsername = document.getElementById('regUsername').value;
+        const regPassword = document.getElementById('regPassword').value;
+
+        if (isUserRegistered(regUsername)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Registrierung fehlgeschlagen!',
+                text: 'Benutzername bereits vergeben. Wähle bitte einen anderen Benutzernamen.',
+            });
+        } else {
+            registeredUsers.push({ username: regUsername, password: regPassword });
+            Swal.fire({
+                icon: 'success',
+                title: 'Registrierung erfolgreich!',
+                text: 'Benutzer wurde registriert!',
+            });
+            switchForms();
+        }
+    }
+
+    function isUserRegistered(username) {
+        return registeredUsers.some(user => user.username === username);
+    }
+
+    function login() {
+        const loginUsername = document.getElementById('loginUsername').value;
+        const loginPassword = document.getElementById('loginPassword').value;
+
+        const user = registeredUsers.find(user => user.username === loginUsername && user.password === loginPassword);
+
+        if (user) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Anmeldung erfolgreich!',
+                text: 'Willkommen!',
+            });
+            switchForms();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Anmeldung fehlgeschlagen!',
+                text: 'Benutzername oder Passwort ist falsch.',
+            });
+        }
+    }
+
+    function switchForms() {
+        const registrationSection = document.getElementById('registration');
+        const loginSection = document.getElementById('login');
+        const accountSection = document.getElementById('account');
+
+        if (registrationSection.style.display === 'block') {
+            registrationSection.style.display = 'none';
+            loginSection.style.display = 'block';
+        } else if (loginSection.style.display === 'block') {
+            loginSection.style.display = 'none';
+            accountSection.style.display = 'block';
+        } else {
+            accountSection.style.display = 'none';
+            registrationSection.style.display = 'block';
+        }
+    }
+
+    function updateAccount() {
+        const editUsername = document.getElementById('editUsername').value;
+        const editPassword = document.getElementById('editPassword').value;
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Konto aktualisiert!',
+            text: `Benutzername - ${editUsername}, Neues Passwort - ${editPassword}`,
+        });
+        switchForms();
+    }
+
+    function submitApplication() {
+        const job = document.getElementById('job').value;
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const message = document.getElementById('message').value;
+        const timestamp = new Date();
+
+        // Beispielhaft: Die Bewerbung in einer Benachrichtigung anzeigen
+        Swal.fire({
+            icon: 'success',
+            title: 'Bewerbung abgeschickt!',
+            html: `Bewerbung für ${job} von ${name} am ${timestamp.toLocaleString()} wurde abgeschickt.`,
+        });
+
+        // Hier könntest du die Bewerbung an den Server senden oder speichern
+    }
+
+</script>
+
+<footer>
+    <p>&copy; 2024 Just Chatting. Alle Rechte vorbehalten.</p>
+</footer>
+
+</body>
+</html>
